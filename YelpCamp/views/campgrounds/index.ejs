@@ -1,4 +1,6 @@
-<% include partials/header %>
+<% include ../partials/header %>
+
+<h4><%= currentUser %></h4>
 
     <div class="container">
         <header class="jumbotron">
@@ -12,7 +14,7 @@
         </header>
         
         
-        <div class="row text-center" style="dispaly:flex; flex-warp: warp;">
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
             
         <% campgrounds.forEach(function(campground){ %>
             <div class="col-md-3 col-sm-6">
@@ -38,4 +40,4 @@
 
 
 
-<% include partials/footer %>
+<% include ../partials/footer %>
