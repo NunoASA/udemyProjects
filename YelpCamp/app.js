@@ -18,7 +18,8 @@ mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useFin
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs")
 app.use(express.static(__dirname + "/public"))
-seedDB();
+
+// seedDB();  //seed the DataBase
 
 
 // PASSPORT CONFIG
@@ -39,20 +40,10 @@ app.use(function(req, res, next){
     next()
 })
 
+// Roputs
 app.use(indexRoutes);
-app.use(campgroundRoutes);
-app.use(commentRoutes);
-
-
-
-
-
-
-
-
-
-
-
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/comments", commentRoutes);
 
 
 app.listen(process.env.PORT, process.env.IP, function(){
