@@ -1,7 +1,7 @@
 var express = require("express");
 var router  = express.Router();
 var Campground = require("../models/campground");
-
+var middleare = require("../middleware");
 
 // INDEX
 router.get("/", function(req,res){
@@ -17,7 +17,7 @@ router.get("/", function(req,res){
 
 
 // CREATE
-router.post("/", isLoggedIn ,function(req, res){
+router.post("/", middleare.isLoggedIn ,function(req, res){
     // get data from form and add to campgrounds array
     var name = req.body.name;
     var image = req.body.image;
@@ -34,7 +34,6 @@ router.post("/", isLoggedIn ,function(req, res){
             console.log(err);
         } else {
             // redirect to campgrounds
-            console.log(newlyCreated)
             res.redirect("/campgrounds");
         }
     })
@@ -42,10 +41,16 @@ router.post("/", isLoggedIn ,function(req, res){
 
 
 // NEW
-router.get("/new", isLoggedIn,  function(req, res) {
+router.get("/new", middleare.isLoggedIn,  function(req, res) {
     res.render("campgrounds/new");
 })
 
+// Edit campground Route
+router.get("/:id/edit", middleare.checkCampgroundOwnership, function(req, res){
+    Campground.findById(req.params.id, function(err, foundCampground){
+        res.render("campgrounds/edit", {campground: foundCampground}); 
+    })
+})
 
 // SHOW
 router.get("/:id", function(req, res) {
@@ -59,13 +64,27 @@ router.get("/:id", function(req, res) {
   
 })
 
+// Update Campground Route
+router.put("/:id", middleare.checkCampgroundOwnership, function(req, res){
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
+        if(err){
+            res.redirect("/campgrounds");
+        } else {
+            res.redirect("/campgrounds/" + req.params.id)
+        }
+    })
+})
 
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
+//Destroy campground Route
+router.delete("/:id", middleare.checkCampgroundOwnership, function(req, res){
+    Campground.findByIdAndRemove(req.params.id, function(err){
+        if(err){
+            res.redirect("/campgrounds")
+        } else {
+            res.redirect("/campgrounds")
+        }
+    })
+})
 
 
 module.exports = router;
